@@ -20,8 +20,8 @@ bus = None
 
 def trust(path):
 	props = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
-	prop.Set("org.bluez.Device1", "Trusted", True)
-	print("Trusted Device: " + device)
+	props.Set("org.bluez.Device1", "Trusted", True)
+	print("Trusted Device: " + path)
   
 class Rejected(dbus.DBusException):
 	_dbus_error_name = "org.bluez.Error.Rejected"
@@ -43,11 +43,12 @@ class Agent(dbus.service.Object):
 					in_signature="os", out_signature="")
 	def AuthorizeService(self, device, uuid):
 		print("AuthorizeService (%s, %s)" % (device, uuid))
-                if uuid == "0000110d-0000-1000-8000-00805f9b34fb":
-					print("Authorized A2DP Service")
-					trust(device)
-                    return
-                print("Rejecting non-A2DP Service")
+		if uuid == "0000110d-0000-1000-8000-00805f9b34fb":
+			print("Authorized A2DP Service")
+			trust(device)
+			return
+
+		print("Rejecting non-A2DP Service")
 		raise Rejected("Connection rejected")
 
 	@dbus.service.method(AGENT_INTERFACE,
@@ -97,7 +98,7 @@ if __name__ == '__main__':
 
 	agent = Agent(bus, AGENT_PATH)
 
-	obj = bus.get_object("org.bluez", "/org/bluez");
+	obj = bus.get_object("org.bluez", "/org/bluez")
 	manager = dbus.Interface(obj, "org.bluez.AgentManager1")
 	manager.RegisterAgent(AGENT_PATH, "NoInputNoOutput")
 
