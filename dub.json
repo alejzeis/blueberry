@@ -1,0 +1,12 @@
+{
+	"name": "blueberry",
+	"authors": [
+		"jython234"
+	],
+	"description": " Experimenal Raspberry Pi software to act as a bluetooth audio device, and broadcast incoming audio to FM radio. ",
+	"copyright": "Copyright © 2019, jython234",
+	"targetType": "executable",
+	"targetName": "blueberryd",
+	"targetPath": "bin",
+	"license": "MPL-2.0"
+}

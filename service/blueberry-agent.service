@@ -1,0 +1,14 @@
+[Unit]
+Description=Blueberry A2DP Bluetooth Agent
+After=bluetooth.service
+Wants=bluetooth.service
+
+[Service]
+ExecStartPre=bluetooth discoverable on
+ExecStart=/usr/bin/python -u /usr/bin/blueberry-agent
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=Blueberry-Agent
+
+[Install]
+WantedBy=bluetooth.service
