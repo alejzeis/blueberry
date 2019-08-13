@@ -15,6 +15,13 @@ except ImportError:
 
 AGENT_INTERFACE = "org.bluez.Agent1"
 AGENT_PATH = "/test/agent"
+
+bus = None
+
+def trust(path):
+	props = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
+	prop.Set("org.bluez.Device1", "Trusted", True)
+	print("Trusted Device: " + device)
   
 class Rejected(dbus.DBusException):
 	_dbus_error_name = "org.bluez.Error.Rejected"
@@ -37,7 +44,8 @@ class Agent(dbus.service.Object):
 	def AuthorizeService(self, device, uuid):
 		print("AuthorizeService (%s, %s)" % (device, uuid))
                 if uuid == "0000110d-0000-1000-8000-00805f9b34fb":
-                    print("Authorized A2DP Service")
+					print("Authorized A2DP Service")
+					trust(device)
                     return
                 print("Rejecting non-A2DP Service")
 		raise Rejected("Connection rejected")

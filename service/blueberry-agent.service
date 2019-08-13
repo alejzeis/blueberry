@@ -4,7 +4,7 @@ After=bluetooth.service
 Wants=bluetooth.service
 
 [Service]
-ExecStartPre=bluetooth discoverable on
+ExecStartPre=bluetoothctl discoverable on
 ExecStart=/usr/bin/python -u /usr/bin/blueberry-agent
 StandardOutput=syslog
 StandardError=syslog
