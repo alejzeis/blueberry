@@ -5,3 +5,6 @@ Wants=blueberry-agent.service
 
 [Service]
 ExecStart=/usr/bin/blueberryd
+
+[Install]
+WantedBy=blueberry-agent.service
