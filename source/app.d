@@ -27,23 +27,16 @@ void main() {
 		if (devAddress.length < 1) {
 			// No Device connected
 
-			if(tryWait(broadcastCommand).terminated) {
-				if(bluetoothConnected) {
-					// Broadcast command exited, end of stream most likely so the bluetooth device disconnected
-					bluetoothConnected = false;
-
-					broadcastCommand = spawnShell(broadcastProgram ~ " --freq " ~ frequency 
+			if(tryWait(broadcastCommand).terminated || bluetoothConnected) {
+				// Broadcast command exited, restart it
+				broadcastCommand = spawnShell(broadcastProgram ~ " --freq " ~ frequency 
 									~ " --ps AJA-RD --rt \"Ready for connections...\" --audio " ~ toneFile);
-				} else {
-					// The tone broadcast crashed for some reason, restart it.
-					broadcastCommand = spawnShell(broadcastProgram ~ " --freq " ~ frequency 
-									~ " --ps AJA-RD --rt \"Ready for connections...\" --audio " ~ toneFile);
-				}
 			}
 
 			Thread.sleep(dur!("msecs")(250));
 		} else {
 			if(!tryWait(broadcastCommand).terminated) {
+				Thread.sleep(dur!("seconds")(3));
 				executeShell("pkill " ~ broadcastProgram); // Kill broadcast program
 			}
 
@@ -53,7 +46,7 @@ void main() {
 
 			bluetoothConnected = true;
 			broadcastCommand = spawnShell(recordProgram ~ 
-									"-f cd -D bluealsa:DEV=" ~ devAddress ~ ",PROFILE=a2dp" 
+									"-f cd -D bluealsa:SRV=org.bluealsa,DEV=" ~ devAddress ~ ",PROFILE=a2dp | " 
 									~ broadcastProgram ~ " --freq " ~ frequency 
 									~ " --ps AJA-RD --rt \"Bluetooth Stream\" --audio -");
 		}
