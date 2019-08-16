@@ -8,6 +8,8 @@ import sys
 import dbus
 import dbus.service
 import dbus.mainloop.glib
+import socket
+
 try:
   from gi.repository import GObject
 except ImportError:
@@ -17,11 +19,18 @@ AGENT_INTERFACE = "org.bluez.Agent1"
 AGENT_PATH = "/test/agent"
 
 bus = None
+sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
 
 def trust(path):
 	props = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
 	props.Set("org.bluez.Device1", "Trusted", True)
 	print("Trusted Device: " + path)
+
+def property_changed_callback(property, value, path, interface):
+	props = dbus.Interface(bus.get_object("org.bluez", path), "org.bluez.Device").GetProperties()
+	if(property == "Connected"):
+		if value != "disconnected":
+			sock.send(("CONNECTED," + props["Address"]).encode('utf-8'))
   
 class Rejected(dbus.DBusException):
 	_dbus_error_name = "org.bluez.Error.Rejected"
@@ -92,9 +101,14 @@ class Agent(dbus.service.Object):
 		print("Cancel")
 
 if __name__ == '__main__':
+	sock.bind("/run/blueberry.sock")
+	print("Socket open.")
+
 	dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
 	bus = dbus.SystemBus()
+
+	bus.add_signal_receiver(property_changed_callback, bus_name="org.bluez", signal_name="PropertyChanged", dbus_interface="org.bluez.Device", path_keyword="path", interface_keyword="interface")
 
 	agent = Agent(bus, AGENT_PATH)
 

@@ -1,7 +1,7 @@
 [Unit]
 Description=Blueberry Daemon
 After=blueberry-agent.service
-Wants=bllueberry-agent.service
+Wants=blueberry-agent.service
 
 [Service]
 ExecStart=/usr/bin/blueberryd
