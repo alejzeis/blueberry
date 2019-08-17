@@ -48,7 +48,7 @@ void main() {
 
 			bluetoothConnected = true;
 			broadcastCommand = spawnShell(recordProgram ~ 
-									"-f cd -D bluealsa:SRV=org.bluealsa,DEV=" ~ devAddress ~ ",PROFILE=a2dp | " 
+									" -f cd -D bluealsa:SRV=org.bluealsa,DEV=" ~ devAddress ~ ",PROFILE=a2dp | " 
 									~ broadcastProgram ~ " --freq " ~ frequency 
 									~ " --ps AJA-RD --rt \"Bluetooth Stream\" --audio -");
 		}

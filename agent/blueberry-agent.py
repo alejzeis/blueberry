@@ -96,7 +96,7 @@ class Agent(dbus.service.Object):
 	def RequestConfirmation(self, device, passkey):
 		print("RequestConfirmation (%s, %06d)" % (device, passkey))
 		confirm = ask("Confirm passkey (yes/no): ")
-    return
+		return
 
 	@dbus.service.method(AGENT_INTERFACE,
 					in_signature="o", out_signature="")
@@ -148,7 +148,7 @@ if __name__ == '__main__':
 
 	mainloop = GObject.MainLoop()
 
-	obj = bus.get_object(BUS_NAME, "/org/bluez");
+	obj = bus.get_object(BUS_NAME, "/org/bluez")
 	manager = dbus.Interface(obj, "org.bluez.AgentManager1")
 	manager.RegisterAgent(path, capability)
 
