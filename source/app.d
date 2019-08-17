@@ -22,6 +22,8 @@ void main() {
 									~ " --ps AJA-RD --rt \"Ready for connections...\" --audio " ~ toneFile);
 
 	do {
+		Thread.sleep(dur!("msecs")(250));
+
 		auto devAddress = executeShell("hcitool con | grep -o -P '(?<=ACL).*(?=handle)'").output.strip();
 
 		if (devAddress.length < 1) {
