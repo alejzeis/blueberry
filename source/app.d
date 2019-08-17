@@ -29,14 +29,23 @@ void main() {
 		if (devAddress.length < 1) {
 			// No Device connected
 
-			if(tryWait(broadcastCommand).terminated || bluetoothConnected) {
-				// Broadcast command exited, restart it
-				broadcastCommand = spawnShell(broadcastProgram ~ " --freq " ~ frequency 
-									~ " --ps AJA-RD --rt \"Ready for connections...\" --audio " ~ toneFile);
-			}
+			if(bluetoothConnected) {
+				// There was previously a device connected but not anymore
+				bluetoothConnected = false;
 
-			Thread.sleep(dur!("msecs")(250));
-		} else {
+				executeShell("pkill " ~ broadcastProgram); // Kill broadcast program for bluetooth
+
+				// Restart broadcast with tone to show there is no device connected.
+				broadcastCommand = spawnShell(broadcastProgram ~ " --freq " ~ frequency 
+										~ " --ps AJA-RD --rt \"Ready for connections...\" --audio " ~ toneFile);
+			} else {
+				if(tryWait(broadcastCommand).terminated) {
+					// Broadcast command crashed, restart it
+					broadcastCommand = spawnShell(broadcastProgram ~ " --freq " ~ frequency 
+										~ " --ps AJA-RD --rt \"Ready for connections...\" --audio " ~ toneFile);
+				}
+			}
+		} else if (!bluetoothConnected) {
 			if(!tryWait(broadcastCommand).terminated) {
 				Thread.sleep(dur!("seconds")(3));
 				executeShell("pkill " ~ broadcastProgram); // Kill broadcast program
